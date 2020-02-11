@@ -1,1 +1,7 @@
-# shiny-project
+### Shiny Project
+
+For this project, I investigated different categories and aspects of animes. To be specific, I looked into animes in different genres, with different ratings and sources. Beyond that, I also performed the data analysis and see if the year when anime premiered, duration of each episode of the anime and possibly opening_theme/ending_theme artists would have any effect on the rating and popularity of the anime, in terms of number of audience watching. Beyond that, I also computed the correlation of numeric variables and see if there is conclusion that can be drawn.
+
+The tools I used in this project is the shiny app of R, including shinyDashboard and shinyWidgets. As for data analysis, I mainly utilized dplyr and tidyr package to clean and organize the data so that the dataset could be visualized using ggplot2 package. The design of user interface can be found in ui.R file and server.R file has all the outputs, including tableoutputs, plot outputs and so forth. The data cleaning part is included in the global.R file.
+
+As for future work, I would like to investigate the dataset about users and see if any interesting insights could be drawn from there. Also, I would like to look into Japanese anime rating website and merge two datasets in some way and see there is any interesting observations could be made. Further, if possible, I would be interested to look at the budget and profits and perform some data analysis around those metrics as well.
