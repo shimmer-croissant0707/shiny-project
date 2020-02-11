@@ -466,6 +466,16 @@ function(input, output, session){
     }
   )
   
+  output$songTable <- renderTable({
+    if(input$radiosongs == "Opening_Theme"){
+      anime_op %>% group_by(OP) %>% summarise(count = n()) %>%
+        arrange(desc(count)) %>% head(input$songtext)
+    }else{
+      anime_ed %>% group_by(ED) %>% summarise(count = n()) %>%
+        arrange(desc(count)) %>% head(input$songtext)
+    }
+  })
+  
   # Interactions
   output$corr <- renderPlot(
     ggcorr(anime1[input$selectcorr], label = TRUE, palette = "RdGy",

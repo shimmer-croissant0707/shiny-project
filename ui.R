@@ -34,6 +34,7 @@ dashboardPage(
   tabItems(
     tabItem(tabName = 'welcome',
             h1("Welcome to the World of Anime!", align = 'center'),
+            img(src='anime.png', height="80%", width="100%", align = "center"),
             img(src='akiba.jpg', height="100%", width="100%", align = "center")
             ),
     
@@ -61,7 +62,6 @@ dashboardPage(
     tabItem(tabName = 'type',
             fluidRow(
               column(width = 10,
-                     h3("Plots of Different Types of Anime"),
                      plotOutput("type")
                      ),
               column(width = 2,
@@ -88,7 +88,6 @@ dashboardPage(
     tabItem(tabName = 'source',
             fluidRow(
               column(width = 10,
-                     h3("Plots of Different Anime Sources"),
                      plotOutput("source")
                     ),
               column(width = 2,
@@ -145,7 +144,6 @@ dashboardPage(
     tabItem(tabName = 'rating',
             fluidRow(
               column(width = 10,
-                     h3("Plots of Different Anime Ratings"),
                      plotOutput("rating")
               ),
               column(width = 2,
@@ -270,7 +268,9 @@ dashboardPage(
                                value = 10),
                      radioButtons("radiosongs","Please choose",
                                   choices = list("Opening_Theme", "Ending_Theme"),
-                                  selected = "Opening_Theme"))
+                                  selected = "Opening_Theme"),
+                     h4("Top Artists"),
+                     tableOutput("songTable"))
             )),
     
     tabItem(tabName = "interactions",
@@ -385,8 +385,8 @@ dashboardPage(
                      "research. I earned undergraduate math degree from Colorado College and a master",
                      "operations research degree from Georgia Institute of Technology.",
                      "I did some research on certain pure math topics during my undergraduate.",
-                     "If you are interested in Vertex Operator Algebra",
-                     "Here is a great",
+                     "If you are interested in Vertex Operator Algebra,",
+                     "here is a great",
                      shiny::a(href = 'https://arxiv.org/pdf/0809.1380.pdf', 'paper'),
                      ".",
                      br(),
@@ -394,8 +394,7 @@ dashboardPage(
                      shiny::a(href = 'https://www.linkedin.com/in/hanbo-shao-899a8aaa/', 'LinkedIn'),
                      "page and also the ",
                      shiny::a(href = 'https://github.com/shimmer-croissant0707/', 'GitHub'),
-                     "page."),
-                  img(src='self.jpeg', height="50%", width="50%", align = "center")
+                     "page.")
                   )
             )
     )
