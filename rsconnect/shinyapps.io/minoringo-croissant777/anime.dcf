@@ -1,0 +1,13 @@
+name: anime
+title: anime
+username:
+account: minoringo-croissant777
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1785600
+bundleId: 2790945
+url: https://minoringo-croissant777.shinyapps.io/anime/
+when: 1581395765.31762
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: README.md|user_info.csv|www/.DS_Store

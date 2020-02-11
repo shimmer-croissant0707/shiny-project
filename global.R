@@ -9,12 +9,12 @@ library(DT)
 library(dashboardthemes)
 library(GGally)
 
-anime <- read.csv("anime_info.csv", header = TRUE, na.strings = c("","NA"), stringsAsFactors = FALSE)
+anime1 <- read.csv("anime_info.csv", header = TRUE, na.strings = c("","NA"), stringsAsFactors = FALSE)
 #users <- read.csv("user_info.csv", na.strings = c("","NA"),stringsAsFactors = FALSE, header = TRUE)
 
 # Data Cleaning for anime dataframe
 # selecting needed columns and remove NA values
-anime1 <- anime %>% select(title, title_japanese, type, source, episodes, aired_string, duration,
+anime1 <- anime1 %>% select(title, title_japanese, type, source, episodes, aired_string, duration,
                           rating, score, scored_by, members, favorites, studio, genre,
                           opening_theme, ending_theme)
 
@@ -28,7 +28,7 @@ anime1$type <- as.character(anime1$type)
 #modify source
 anime1$source <- as.factor(anime1$source)
 levels(anime1$source)[c(1,4,12,16)] = "Manga"
-levels(anime1$source)[c(2,5,7,12)] = "Light_Novel"
+levels(anime1$source)[c(2,5,7,12)] = "Light Novel"
 levels(anime1$source)[3] = "Game"
 levels(anime1$source)[8] = "Other"
 levels(anime1$source)[7] = NA
@@ -38,6 +38,8 @@ anime1$source <- as.character(anime1$source)
 anime1$aired_string <- gsub(' to.*' ,'', anime1$aired_string)
 anime1$aired_string <- as.numeric(gsub('.*, ', '', anime1$aired_string))
 anime1 <- rename(anime1, year = `aired_string`)
+anime1 <- rename(anime1, raters = `scored_by`)
+
 
 # modifying duration
 anime1$duration <- gsub(" per.*", "",anime1$duration)
@@ -57,6 +59,8 @@ anime_studio <- separate_rows(anime1, studio, sep = ', ')
 
 # modifying genre
 anime_genre <- separate_rows(anime1, genre, sep = ', ')
+
+anime_ranking <- separate_rows(anime_studio, genre, sep = ', ')
 
 # modifying opening_theme/ending_theme
 anime1 <- rename(anime1, OP = `opening_theme`)
@@ -88,10 +92,12 @@ anime_op <- anime_op[complete.cases(anime_op), ]
 anime_ed <- anime_ed[anime_ed$OP != "" & anime_ed$ED != "", ]
 anime_ed <- anime_ed[complete.cases(anime_ed), ]
 
-choice <- c("score", "scored_by", "members", "favorites")
+choice <- c("score", "raters", "members", "favorites")
 unique_source <- unique(anime1$source)
 unique_rating <- unique(anime1$rating)
-displaychoice <- c("count","average_score", "average_raters", "average_watching", "average_favorites") 
+displaychoice <- c("count","average score", "average raters", "average watching", "average favorites")
+displaychoice1 <- c("average per year","average score", "average raters", 
+                    "average watching", "average favorites") 
  
 
 # a function that filters outliers
@@ -103,5 +109,6 @@ is_outlier <- function(vector_) {
 rows_anime1 <- nrow(anime1)
 rows_genre <- nrow(anime_genre)
 
-corr_choice = c("episodes", "year", "duration", "score", "scored_by", "members", "favorites")
+corr_choice = c("episodes", "year", "duration", "score", "raters", "members", "favorites")
+
 
