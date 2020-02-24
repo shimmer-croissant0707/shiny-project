@@ -5,9 +5,9 @@ account: minoringo-croissant777
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1785600
-bundleId: 2823165
+bundleId: 2825949
 url: https://minoringo-croissant777.shinyapps.io/anime/
-when: 1582511698.18275
+when: 1582580682.63186
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: .RData|README.md|user_info.csv|www/.DS_Store

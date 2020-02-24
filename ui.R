@@ -305,7 +305,8 @@ dashboardPage(
                          solidHeader = TRUE,
                          selectizeInput("selectstudiotest","Select Studios",
                                         choices = unique(anime_studio$studio),
-                                        multiple = TRUE)
+                                        multiple = TRUE,
+                                        selected = unique(anime_studio$studio)[1:2])
                      ),
                      box(width = 7,
                          title = "Test Result for Audience", status = "primary", solidHeader = TRUE,
@@ -355,7 +356,8 @@ dashboardPage(
                          solidHeader = TRUE,
                          selectizeInput("selectgenretest","Select Genres",
                                         choices = unique(anime_genre$genre),
-                                        multiple = TRUE)
+                                        multiple = TRUE,
+                                        selected = unique(anime_genre$genre)[1:2])
                      ),
                      box(width = 7,
                          title = "Test Result for Audience", status = "primary", solidHeader = TRUE,
