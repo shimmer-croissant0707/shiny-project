@@ -107,8 +107,9 @@ is_outlier <- function(vector_) {
 }
 
 rows_anime1 <- nrow(anime1)
-rows_genre <- nrow(anime_genre)
+anime_top_10_genre <- anime_genre %>% group_by(genre) %>% summarise(count = n()) %>% 
+  arrange(desc(count)) %>% head(10)
+rows_genre <- sum(anime_top_10_genre$count)
 
 corr_choice = c("episodes", "year", "duration", "score", "raters", "members", "favorites")
-
 

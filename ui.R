@@ -18,11 +18,9 @@ dashboardPage(
                 menuItem('Genre', tabName = 'genre', icon = icon('folder')),
                 menuItem('Anime Songs', tabName = 'songs', icon = icon('music'))),
                 
+                #menuItem('Users', tabName='user', icon = icon('user')),
                 menuItem('Interactions', tabName='interactions', icon = icon('chart-area')),
                 menuItem('Rankings', tabName='ranking', icon = icon('line-chart')),
-                
-                #menuItem('Users', tabName='user', icon = icon('user')),
-                
                 menuItem('Data', tabName='data', icon = icon('database')),
                 menuItem('About', tabName='about', icon = icon('info'))
                 
@@ -34,8 +32,10 @@ dashboardPage(
   tabItems(
     tabItem(tabName = 'welcome',
             h1("Welcome to the World of Anime!", align = 'center'),
-            img(src='anime.png', height="80%", width="100%", align = "center"),
-            img(src='akiba.jpg', height="100%", width="100%", align = "center")
+            img(src='anime.png', height="80%", width="80%", 
+                style="display: block; margin-left: auto; margin-right: auto;"),
+            img(src='akiba.jpg', height="80%", width="80%",
+            style="display: block; margin-left: auto; margin-right: auto;")
             ),
     
     tabItem(tabName = 'anime',
@@ -45,21 +45,23 @@ dashboardPage(
                      infoBoxOutput("avg_member")
             ),
             fluidRow(
-              h3("Summary Pie Charts of Anime Dataset", align = "center"),
+              h3("Summary Histograms of Anime Dataset", align = "center"),
               column(width = 6,
-                    plotOutput("typePie")),
+                    plotOutput("typeHist")),
               column(width = 6,
-                    plotOutput("genrePie"))
+                    plotOutput("genreHist"))
             ),
             fluidRow(
               column(width = 6,
-                     plotOutput("sourcePie")),
+                     plotOutput("sourceHist")),
               column(width = 6,
-                     plotOutput("ratingPie"))
+                     plotOutput("ratingHist"))
             )
             ),
     
     tabItem(tabName = 'type',
+            tabsetPanel(
+              tabPanel('graphical analysis',
             fluidRow(
               column(width = 10,
                      plotOutput("type")
@@ -82,10 +84,30 @@ dashboardPage(
                        radioButtons("radiotype", "Remove Outliers for the table",
                                     choices = c("Yes", "No"), selected = "Yes")
                        )
-              )
-            ),
+              )),
+            tabPanel('Statistical Tests',
+                     box(width = 7,
+                       title = "Test Result for Score", status = "primary", solidHeader = TRUE,
+                       verbatimTextOutput("typetext1")
+                     ),
+                     
+                     box(width = 5,
+                       title = "Please Select Variables for ANOVA test", status = "warning",
+                       solidHeader = TRUE,
+                       checkboxGroupInput("typecheckbox1", "Select Variables",
+                                          choices = c("TV", "Movie", "OVA", "Music"),
+                                          selected = c("TV", "Movie", "OVA", "Music"),
+                       )
+                     ),
+                     box(width = 7,
+                         title = "Test Result for Audience", status = "primary", solidHeader = TRUE,
+                         verbatimTextOutput("typetext2")
+                     ))
+            )),
     
     tabItem(tabName = 'source',
+            tabsetPanel(
+              tabPanel('Graphical Analysis',
             fluidRow(
               column(width = 10,
                      plotOutput("source")
@@ -109,6 +131,27 @@ dashboardPage(
                                   choices = c("Yes", "No"), selected = "Yes")
               )
               )),
+            
+            tabPanel('Statistical Test',
+                     box(width = 7,
+                         title = "Test Result for Score", status = "primary", solidHeader = TRUE,
+                         verbatimTextOutput("sourcetext1")
+                     ),
+                     
+                     box(width = 5,
+                         title = "Please Select Variables for ANOVA test", status = "warning",
+                         solidHeader = TRUE,
+                         checkboxGroupInput("sourcecheckbox1", "Show Types of Sources",
+                                            choices = unique_source,
+                                            selected = unique_source
+                         )
+                         ),
+                     box(width = 7,
+                         title = "Test Result for Audience", status = "primary", solidHeader = TRUE,
+                         verbatimTextOutput("sourcetext2")
+                     )
+                     )
+            )),
     
     tabItem(tabName = 'year',
             fluidRow(
@@ -141,7 +184,10 @@ dashboardPage(
             )
             ),
     
+    
     tabItem(tabName = 'rating',
+            tabsetPanel(
+              tabPanel('Graphical Analysis',
             fluidRow(
               column(width = 10,
                      plotOutput("rating")
@@ -164,8 +210,28 @@ dashboardPage(
                      radioButtons("radiorating", "Remove Outliers for the table",
                                   choices = c("Yes", "No"), selected = "Yes")
               )
+            )),
+            
+            tabPanel('Statistical Test',
+                     box(width = 7,
+                         title = "Test Result for Score", status = "primary", solidHeader = TRUE,
+                         verbatimTextOutput("ratingtext1")
+                     ),
+                     
+                     box(width = 5,
+                         title = "Please Select Variables for ANOVA test", status = "warning",
+                         solidHeader = TRUE,
+                         checkboxGroupInput("ratingcheckbox1", "Show Types of Ratings",
+                                            choices = unique_rating,
+                                            selected = unique_rating
+                         )
+                     ),
+                     box(width = 7,
+                         title = "Test Result for Audience", status = "primary", solidHeader = TRUE,
+                         verbatimTextOutput("ratingtext2")
+                     )
             )
-            ),
+            )),
     
     tabItem(tabName = 'duration',
             fluidRow(
@@ -199,6 +265,8 @@ dashboardPage(
             ),
     
     tabItem(tabName = 'studio',
+            tabsetPanel(
+              tabPanel('Graphical Analysis',
             fluidRow(
               column(width = 10,
                      h3("Summary Plots Related to Various Anime Creating Studios"),
@@ -226,8 +294,29 @@ dashboardPage(
               infoBoxOutput("studio1"),
               infoBoxOutput("studio2")
             )),
+            tabPanel('Statistical Test',
+                     box(width = 7,
+                         title = "Test Result for Score", status = "primary", solidHeader = TRUE,
+                         verbatimTextOutput("studiotext1")
+                     ),
+                     
+                     box(width = 5,
+                         title = "Please Select Variables for ANOVA test", status = "warning",
+                         solidHeader = TRUE,
+                         selectizeInput("selectstudiotest","Select Studios",
+                                        choices = unique(anime_studio$studio),
+                                        multiple = TRUE)
+                     ),
+                     box(width = 7,
+                         title = "Test Result for Audience", status = "primary", solidHeader = TRUE,
+                         verbatimTextOutput("studiotext2")
+                     )
+            )
+            )),
     
     tabItem(tabName = 'genre',
+            tabsetPanel(
+              tabPanel('Graphical Analysis',
             fluidRow(
               column(width = 10,
                      h3("Summary Plots Related to Various Anime Genres"),
@@ -255,8 +344,30 @@ dashboardPage(
               infoBoxOutput("genre1"),
               infoBoxOutput("genre2")
             )),
+            tabPanel('Statistical Test',
+                     box(width = 7,
+                         title = "Test Result for Score", status = "primary", solidHeader = TRUE,
+                         verbatimTextOutput("genretext1")
+                     ),
+                     
+                     box(width = 5,
+                         title = "Please Select Variables for ANOVA test", status = "warning",
+                         solidHeader = TRUE,
+                         selectizeInput("selectgenretest","Select Genres",
+                                        choices = unique(anime_genre$genre),
+                                        multiple = TRUE)
+                     ),
+                     box(width = 7,
+                         title = "Test Result for Audience", status = "primary", solidHeader = TRUE,
+                         verbatimTextOutput("genretext2")
+                     )
+            )
+            )),
+    
     
     tabItem(tabName = 'songs',
+            tabsetPanel(
+              tabPanel('Graphical Analysis',
             fluidRow(
               column(width = 9,
                      h3("Summary Plots of Anime Opening/Ending Songs"),
@@ -272,6 +383,27 @@ dashboardPage(
                      h4("Top Artists"),
                      tableOutput("songTable"))
             )),
+            
+            tabPanel('Statistical Test',
+                     box(width = 7,
+                         title = "Test Result for Score", status = "primary", solidHeader = TRUE,
+                         verbatimTextOutput("songtesttext1")
+                     ),
+                     box(width = 5,
+                         title = "Please Select Variables for t-test", status = "warning",
+                         solidHeader = TRUE,
+                         textInput("songtext1", "Enter Top X Artists",
+                                   value = 10),
+                         radioButtons("radiosongs1","Please choose",
+                                      choices = list("Opening_Theme", "Ending_Theme"),
+                                      selected = "Opening_Theme")
+                     ),
+                     box(width = 7,
+                         title = "Test Result for Audience", status = "primary", solidHeader = TRUE,
+                         verbatimTextOutput("songtesttext2")
+                     )
+            )
+    )),
     
     tabItem(tabName = "interactions",
             fluidRow(
@@ -364,7 +496,11 @@ dashboardPage(
                   shiny::a(href = 'https://www.kaggle.com/azathoth42/myanimelist', 'dataset'), 
                   "that contains information on MyAnimeLists from Kaggle open dataset collections.",
                   "MyAnimeLists can be seen as the imdb for animes and a lot of interesting discoveries",
-                  "are found in this project."),
+                  "are found in this project. I also included the statistical tests section so that",
+                  "users can perform statistical tests. Is you have any suggestion or improvement",
+                  "on this shiny app. Please contact me via",
+                  shiny::a(href = 'shimmer_croissant@hotmail.com', 
+                           'my email.')),
                   br(),
                   h3("Future Work"),
                   br(),
@@ -379,18 +515,17 @@ dashboardPage(
                   br(),
                   h4("My name is Hanbo Shao, currently a data science fellow at NYC Data Science Academy.",
                      "I love watching animes (I watch it nearly everyday) and working on this project",
-                     "is pretty fun.",
+                     "is pretty fun."),
                      br(),
-                     "Before this, I have a quantitative background in both pure mathematics and operations",
-                     "research. I earned undergraduate math degree from Colorado College and a master",
-                     "operations research degree from Georgia Institute of Technology.",
+                     h4("Before this, I have a quantitative background in both pure math and operations",
+                     "research. I obtained my undergraduate math degree from Colorado College and my master's",
+                     "degree in Operations Research from the Georgia Institute of Technology.",
                      "I did some research on certain pure math topics during my undergraduate.",
                      "If you are interested in Vertex Operator Algebra,",
                      "here is a great",
-                     shiny::a(href = 'https://arxiv.org/pdf/0809.1380.pdf', 'paper'),
-                     ".",
+                     shiny::a(href = 'https://arxiv.org/pdf/0809.1380.pdf', 'paper.')),
                      br(),
-                     "For more information about myself, please check out",
+                     h4("For more information about myself, please check out the",
                      shiny::a(href = 'https://www.linkedin.com/in/hanbo-shao-899a8aaa/', 'LinkedIn'),
                      "page and also the ",
                      shiny::a(href = 'https://github.com/shimmer-croissant0707/', 'GitHub'),

@@ -11,40 +11,32 @@ function(input, output, session){
             icon("chart-bar"))
   )
   # pie charts in the overview
-  output$typePie <- renderPlot(
+  output$typeHist <- renderPlot(
     anime1 %>% group_by(type) %>% summarise(count = n()) %>% 
-      ggplot(aes(x="", y=count, fill=type)) + geom_bar(width = 1, stat = "identity") +
-      coord_polar("y", start=0) + geom_text(aes(label = paste0(round((count/rows_anime1)*100), "%")), 
-                                            position = position_stack(vjust = 0.5)) +
-      ggtitle("Pie Chart of Type of Anime") + xlab(NULL) + ylab(NULL) + theme_bw() +
-      theme(plot.title = element_text(size = 20, face = "bold"))
+      ggplot(aes(x=reorder(.$type, -count) , y=count, fill=type)) + geom_bar(stat="identity") +
+      ggtitle("Histogram of Type of Anime") + theme_bw() + xlab("types of the aniem") +
+      theme(plot.title = element_text(size = 20, face = "bold")) 
   )
   
-  output$genrePie <- renderPlot(
+  output$genreHist <- renderPlot(
     anime_genre %>% group_by(genre) %>% summarise(count = n()) %>% arrange(desc(count)) %>% 
-      head(10) %>% 
-      ggplot(aes(x="", y=count, fill=genre)) + geom_bar(width = 1, stat = "identity") +
-      coord_polar("y", start=0) + geom_text(aes(label = paste0(round((count/rows_genre)*100), "%")), 
-                                            position = position_stack(vjust = 0.5)) +
-      ggtitle("Pie Chart of Genre of Anime") + xlab(NULL) + ylab(NULL) + theme_bw() +
+      top_n(10) %>% 
+      ggplot(aes(x=reorder(.$genre, -count), y=count, fill=genre)) + geom_bar(stat="identity") +
+      ggtitle("Histogram of top 10 Genre of Anime") + theme_bw() + xlab("genres of the anime") +
       theme(plot.title = element_text(size = 20, face = "bold"))
   )
   
-  output$sourcePie <- renderPlot(
+  output$sourceHist <- renderPlot(
     anime1 %>% group_by(source) %>% summarise(count = n()) %>% 
-      ggplot(aes(x="", y=count, fill=source)) + geom_bar(width = 1, stat = "identity") +
-      coord_polar("y", start=0) + geom_text(aes(label = paste0(round((count/rows_anime1)*100), "%")), 
-                                            position = position_stack(vjust = 0.5)) +
-      ggtitle("Pie Chart of Sources of Anime") + xlab(NULL) + ylab(NULL) + theme_bw() +
+      ggplot(aes(x=reorder(.$source, -count), y=count, fill=source)) + geom_bar(stat="identity") + 
+      ggtitle("Histogram of Sources of Anime") + theme_bw() + xlab("sources of the anime") + 
       theme(plot.title = element_text(size = 20, face = "bold"))
   )
   
-  output$ratingPie <- renderPlot(
+  output$ratingHist <- renderPlot(
     anime1 %>% group_by(rating) %>% summarise(count = n()) %>% 
-      ggplot(aes(x="", y=count, fill=rating)) + geom_bar(width = 1, stat = "identity") +
-      coord_polar("y", start=0) + geom_text(aes(label = paste0(round((count/rows_anime1)*100), "%")), 
-                                            position = position_stack(vjust = 0.5)) +
-      ggtitle("Pie Chart of Ratings of Anime") + xlab(NULL) + ylab(NULL) + theme_bw() +
+      ggplot(aes(x=reorder(.$rating, -count), y=count, fill=rating)) + geom_bar(stat="identity") +
+      ggtitle("Histogram of Ratings of Anime") +  theme_bw() + xlab("ratings of the anime") +
       theme(plot.title = element_text(size = 20, face = "bold"))
   )
 
@@ -65,7 +57,7 @@ function(input, output, session){
       anime1 %>% filter(type %in% input$typecheckbox) %>% 
         mutate(outlier = is_outlier(.data[[paste(strsplit(input$selecttype, " ")[[1]], 
                                                  collapse = "_")]])) %>% filter(outlier == FALSE) %>%
-        ggplot(aes_string(x = "type", y = input$selecttype)) + geom_boxplot() +
+        ggplot(aes_string(x = "type", y = input$selecttype, color = "type")) + geom_boxplot() +
         ggtitle("Boxplots of Types of Anime") + theme_bw() + 
         theme(axis.text.x = element_text(face = "bold", color = "black", size = 16)) +
         theme(axis.text.y = element_text(face = "bold", color = "black", size = 16)) +
@@ -90,6 +82,12 @@ function(input, output, session){
     },caption = "Summary Statistics of Types of Anime"
   )
   
+  # type statistical test
+  type_test_table <- reactive({anime1 %>% filter(type %in% input$typecheckbox1)})
+
+  output$typetext1 <- renderPrint({ summary(aov(score ~ type, data = type_test_table())) })
+  output$typetext2 <- renderPrint({ summary(aov(members ~ type, data = type_test_table())) })
+  
   #source plot/table
   output$source <- renderPlot(
     if(input$selectsource == "score"){
@@ -108,7 +106,7 @@ function(input, output, session){
         mutate(outlier = is_outlier(.data[[paste(strsplit(input$selectsource, " ")[[1]],
                                                  collapse = "_")]])) %>% 
         filter(outlier == FALSE) %>%
-        ggplot(aes_string(x = "source", y = input$selectsource)) + geom_boxplot() +
+        ggplot(aes_string(x = "source", y = input$selectsource, color = "source")) + geom_boxplot() +
         ggtitle('Boxplots of Sources of Anime') + theme_bw()+ 
         theme(axis.text.x = element_text(face = "bold", color = "black", size = 16)) +
         theme(axis.text.y = element_text(face = "bold", color = "black", size = 16)) +
@@ -131,6 +129,12 @@ function(input, output, session){
                   mean_watchers = mean(members), min_watchers = min(members), max_watchers = max(members))
     },caption = "Summary Statistics of Sources of Anime"
   )
+  
+  # source statistical test
+  source_test_table <- reactive({anime1 %>% filter(source %in% input$sourcecheckbox1)})
+  
+  output$sourcetext1 <- renderPrint({ summary(aov(score ~ source, data = source_test_table())) })
+  output$sourcetext2 <- renderPrint({ summary(aov(members ~ source, data = source_test_table())) })
   
   #year plot
   year_table <- reactive({
@@ -157,7 +161,8 @@ function(input, output, session){
         theme(axis.title = element_text(size = 12, face = "bold"))
     }else{
         year_table() %>%
-        ggplot() + geom_point(aes_string(x = "year", y = input$selectyear)) +
+        ggplot() + geom_point(aes_string(x = "year", y = paste(strsplit(input$selectyear, " ")[[1]],
+                                                               collapse = "_"))) +
         ggtitle("Scatterplots of anime statistics VS. years") + theme_bw()+ 
         theme(axis.text.x = element_text(face = "bold", color = "black", size = 16)) +
         theme(axis.text.y = element_text(face = "bold", color = "black", size = 16)) +
@@ -209,7 +214,8 @@ function(input, output, session){
         mutate(outlier = is_outlier(.data[[paste(strsplit(input$selectrating, " ")[[1]],
                                                  collapse = "_")]])) %>%
         filter(outlier == FALSE) %>%
-        ggplot(aes_string(x = "rating", y = input$selectrating)) + geom_boxplot() + 
+        ggplot(aes_string(x = "rating", y = paste(strsplit(input$selectrating, " ")[[1]],
+                                                  collapse = "_"), color = "rating")) + geom_boxplot() + 
         ggtitle('Boxplots of Ratings of Anime') + theme_bw()+ 
         theme(axis.text.x = element_text(face = "bold", color = "black", size = 16)) +
         theme(axis.text.y = element_text(face = "bold", color = "black", size = 16)) +
@@ -232,6 +238,12 @@ function(input, output, session){
                   mean_watchers = mean(members), min_watchers = min(members), max_watchers = max(members))
     },caption = "Summary Statistics of Ratings of Anime"
   )
+  
+  # rating statistical test
+  rating_test_table <- reactive({anime1 %>% filter(rating %in% input$ratingcheckbox1)})
+  
+  output$ratingtext1 <- renderPrint({ summary(aov(score ~ rating, data = rating_test_table())) })
+  output$ratingtext2 <- renderPrint({ summary(aov(members ~ rating, data = rating_test_table())) })
   
   #duration plot
   duration_table <- reactive({
@@ -258,7 +270,8 @@ function(input, output, session){
         theme(axis.title = element_text(size = 12, face = "bold"))
     }else{
       duration_table()%>%
-        ggplot() + geom_point(aes_string(x = "duration", y = input$selectduration)) +
+        ggplot() + geom_point(aes_string(x = "duration", y = paste(strsplit(input$selectduration, " ")[[1]],
+                                                                   collapse = "_"))) +
         ggtitle('Plot of Characteristics of Anime VS. Durations') + theme_bw()+ 
         theme(axis.text.x = element_text(face = "bold", color = "black", size = 16)) +
         theme(axis.text.y = element_text(face = "bold", color = "black", size = 16)) +
@@ -269,15 +282,14 @@ function(input, output, session){
   
   output$duration1 <- renderInfoBox({
     minduration <- duration_table() %>% arrange(average_score) %>% head(1)
-    infoBox("Lowest Average Duration/Score", value = paste("Duration:", minduration$duration, "Min,",
-                                                       "Score:", sprintf("%.2f",minduration$average_score)))
+    infoBox("Lowest Average Score", value = paste(sprintf("%.2f",minduration$average_score),
+                                                  "(occurs at",minduration$duration,"minutes)"))
   })
   
   output$duration2 <- renderInfoBox({
     maxduration <- duration_table() %>% arrange(desc(average_score)) %>% head(1)
-    infoBox("Highest Average Duration/Score", value = paste("Duration:", maxduration$duration, "Min,",
-                                                        "Score:", 
-                                                        sprintf("%.2f", maxduration$average_score)))
+    infoBox("Highest Average Score", value = paste(sprintf("%.2f",maxduration$average_score),
+                                                   "(occurs at",maxduration$duration,"minutes)"))
   })
   
   output$duration3 <- renderInfoBox({
@@ -348,6 +360,12 @@ function(input, output, session){
     infoBox("Average Audience", value = round(averagewatch))
   })
   
+  # studio statistical test
+  studio_test_table <- reactive({anime1 %>% filter(studio %in% input$selectstudiotest)})
+  
+  output$studiotext1 <- renderPrint({ summary(aov(score ~ studio, data = studio_test_table())) })
+  output$studiotext2 <- renderPrint({ summary(aov(members ~ studio, data = studio_test_table())) })
+  
   #genre plot
   
   observe({
@@ -407,6 +425,12 @@ function(input, output, session){
       summarise(meanaudience = mean(members)) %>% pull(meanaudience)
     infoBox("Average Audience", value = round(averagewatch))
   })
+  
+  # genre statistical test
+  genre_test_table <- reactive({anime1 %>% filter(genre %in% input$selectgenretest)})
+  
+  output$genretext1 <- renderPrint({ summary(aov(score ~ genre, data = genre_test_table())) })
+  output$genretext2 <- renderPrint({ summary(aov(members ~ genre, data = genre_test_table())) })
   
   # Anime Songs
   
@@ -476,6 +500,52 @@ function(input, output, session){
     }
   })
   
+  # song statistical test
+  
+  anime_artists1 <- reactive({
+    if(input$radiosongs1 == "Opening_Theme"){
+      anime_op %>% group_by(OP) %>% 
+        summarise(count = n()) %>% arrange(desc(count)) %>% 
+        top_n(input$songtext1) %>% pull(OP)
+    }else{
+      anime_ed %>% group_by(ED) %>% 
+        summarise(count = n()) %>% arrange(desc(count)) %>% 
+        top_n(input$songtext1) %>% pull(ED)
+    }
+  })
+  
+  anime_artists2 <- reactive({
+    if(input$radiosongs1 == "Opening_Theme"){
+      anime_op %>% filter(anime_op$OP %in% anime_artists1())
+    }else{
+      anime_ed %>% filter(anime_ed$ED %in% anime_artists1())
+    }
+  })
+  
+  anime_artists3 <- reactive({
+    if(input$radiosongs1 == "Opening_Theme"){
+      anime_op %>% filter(!anime_op$OP %in% anime_artists1())
+    }else{
+      anime_op %>% filter(!anime_op$OP %in% anime_artists1())
+    }
+  })
+  
+  output$songtesttext1 <- renderPrint({ 
+    if (var.test(anime_artists2()$score, anime_artists3()$score,
+                 alternative = "two.sided")$p.value > 0.05){
+      t.test(anime_artists2()$score, anime_artists3()$score, var.equal = TRUE)
+    }else{
+      t.test(anime_artists2()$score, anime_artists3()$score, var.equal = FALSE)
+    }})
+  
+  output$songtesttext2 <- renderPrint({ 
+    if (var.test(anime_artists2()$members, anime_artists3()$members,
+                 alternative = "two.sided")$p.value > 0.05){
+      t.test(anime_artists2()$members, anime_artists3()$members, var.equal = TRUE)
+    }else{
+      t.test(anime_artists2()$members, anime_artists3()$members, var.equal = FALSE)
+    }})
+  
   # Interactions
   output$corr <- renderPlot(
     ggcorr(anime1[input$selectcorr], label = TRUE, palette = "RdGy",
@@ -544,4 +614,5 @@ function(input, output, session){
     datatable(anime1, options = list(scrollX = TRUE,autoWidth = TRUE), rownames=FALSE) %>% 
       formatStyle(input$selected, background="skyblue", fontWeight='bold')
   })
+  
 }
